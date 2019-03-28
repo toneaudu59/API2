@@ -166,4 +166,39 @@ public class InfoDAO extends DAO<Info> {
         
         
     }
+    
+    /**
+     * méthode permettant de récupérer toutes les infos en fonction de l'id de la prescription
+     * @param id id recherché
+     * @return liste d'infos
+     * @throws SQLException id inconnu
+     */
+    public List<Info> rech(String id) throws SQLException {
+        List<Info> plusieurs = new ArrayList<>();
+        String req = "select * from api_info where idmedoc = ?";
+        dbConnect=DBConnection.getConnection();
+        try (PreparedStatement pstm = dbConnect.prepareStatement(req)) {
+            pstm.setInt(1, Integer.parseInt(id));
+            try (ResultSet rs = pstm.executeQuery()) {
+                boolean trouve = false;
+                while (rs.next()) {
+                    trouve = true;
+                    int idi = rs.getInt("IDINFO");
+                    int quantite = rs.getInt("QUANTITE");
+                    String unite = rs.getString("UNITE");
+                    int idmedoc = rs.getInt("IDMEDOC");
+                    int idpres = rs.getInt("IDPRES");
+                    plusieurs.add(new Info(idi, quantite, unite, idmedoc, idpres));
+                }
+
+                if (!trouve) {
+                    throw new SQLException("id prescription inconnu");
+                } else {
+                    return plusieurs;
+                }
+            }
+        }
+        
+        
+    }
 }

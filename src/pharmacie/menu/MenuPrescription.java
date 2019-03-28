@@ -63,7 +63,7 @@ public class MenuPrescription {
                 PatientDAO pad = new PatientDAO();
                 pa = pad.read(pa);
                 System.out.println(pa);
-                List<String> plusieurs = p.rechp(pa.getId(),"PRES");
+                List<String> plusieurs = p.rechp(pa.getId(),"PRES");//TODO if(prescription!=NULL)
                 for (String ps : plusieurs) {
                     System.out.println(ps);
                 }

@@ -11,6 +11,7 @@ import java.sql.*;
 import java.util.*;
 import myconnection.DBConnection;
 import pharmacie.metier.Medicament;
+import pharmacie.metier.Vue_somme_medicament_prescrit;
 
 public class MedicamentDAO extends DAO<Medicament> {
 
@@ -163,9 +164,9 @@ public class MedicamentDAO extends DAO<Medicament> {
      * @return liste de medicaments
      * @throws SQLException description inconnu
      */
-    public List<Medicament> rech(String desc) throws SQLException {
-        List<Medicament> plusieurs = new ArrayList<>();
-        String req = "select * from api_medicament where description like ?";
+    public List<Vue_somme_medicament_prescrit> rech(String desc) throws SQLException {
+        List<Vue_somme_medicament_prescrit> plusieurs = new ArrayList<>();
+        String req = "select * from vue_somme_medicament_prescrit where description like ?";
         dbConnect = DBConnection.getConnection();
         try (PreparedStatement pstm = dbConnect.prepareStatement(req)) {
             pstm.setString(1, "%" + desc + "%");
@@ -173,11 +174,12 @@ public class MedicamentDAO extends DAO<Medicament> {
                 boolean trouve = false;
                 while (rs.next()) {
                     trouve = true;
-                    int id = rs.getInt("IDMEDOC");
+                    int id = rs.getInt("ID");
                     String nom = rs.getString("NOM");
                     String description = rs.getString("DESCRIPTION");
-                    String stock = rs.getString("STOCK");
-                    plusieurs.add(new Medicament(id, nom, description, stock));
+                    int quantite = rs.getInt("QUANTITE");
+                    String unite = rs.getString("UNITE");
+                    plusieurs.add(new Vue_somme_medicament_prescrit(id, nom, description, quantite, unite));
                 }
 
                 if (!trouve) {

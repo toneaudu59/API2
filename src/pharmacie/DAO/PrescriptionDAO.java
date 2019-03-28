@@ -67,17 +67,16 @@ public class PrescriptionDAO extends DAO<Prescription> {
         String req = "select * from api_prescription where idpres = ?";
         dbConnect = DBConnection.getConnection();
         try (PreparedStatement pstm = dbConnect.prepareStatement(req)) {
-
             pstm.setInt(1, id);
-            try (ResultSet rs = pstm.executeQuery()) {
+            try (ResultSet rs = pstm.executeQuery()) {            
                 if (rs.next()) {
-                    LocalDate date = rs.getDate("DATEPRESCRIPTION").toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    LocalDate date = rs.getDate("DATEPRESCRIPTION").toLocalDate();
                     int idmed = rs.getInt("IDMED");
                     int idpat = rs.getInt("IDPAT");
                     return new Prescription(id, date, idmed, idpat);
 
                 } else {
-                    throw new SQLException("Code inconnu");
+                    throw new SQLException("id de la prescription inconnu");
                 }
 
             }
@@ -146,7 +145,7 @@ public class PrescriptionDAO extends DAO<Prescription> {
                     String prescription = rs.getString("PRES");
                     return prescription;
                 } else {
-                    throw new SQLException("id inconnu");
+                    throw new SQLException("id de la prescription inconnu");
                 }
             }
         }
@@ -159,7 +158,7 @@ public class PrescriptionDAO extends DAO<Prescription> {
      *
      * @param id id recherché
      * @param ch liste à retourner
-     * @return description d'une prescription
+     * @return description ou id d'une prescription
      * @throws SQLException id inconnu
      */
     public List<String> rechp(int id, String ch) throws SQLException {
@@ -191,7 +190,7 @@ public class PrescriptionDAO extends DAO<Prescription> {
                 }
 
                 if (!trouve) {
-                    throw new SQLException("id inconnu");
+                    throw new SQLException("id de la prescription inconnu");
                 } else {
                     return plusieurs;
                 }
@@ -207,10 +206,10 @@ public class PrescriptionDAO extends DAO<Prescription> {
      *
      * @param ch liste à retourner
      * @param id id recherché
-     * @return description d'une prescription
+     * @return description ou id d'une prescription
      * @throws SQLException id inconnu
      */
-    public List<String> rechm(String ch,int id) throws SQLException {
+    public List<String> rechm(String ch, int id) throws SQLException {
         List<String> plusieurs = new ArrayList<>();
         String req = "select api_prescription.idpres as id,api_medecin.idmed as idmed,dateprescription||' '||api_medicament.nom||' '||api_info.quantite||' '||api_info.unite||' '||description as PRES\n"
                 + "from api_medecin\n"
@@ -245,5 +244,42 @@ public class PrescriptionDAO extends DAO<Prescription> {
                 }
             }
         }
+    }
+
+    /**
+     * méthode permettant de récupérer une prescription en fonction de l'id du médicament
+     *
+     * @param id id recherché
+     * @return description d'une prescription
+     * @throws SQLException id inconnu
+     */
+    public List<Integer> rechmed(int id) throws SQLException {
+        List<Integer> plusieurs = new ArrayList<>();
+        String req = "select api_prescription.idpres as id,api_medecin.idmed as idmed,dateprescription||' '||api_medicament.nom||' '||api_info.quantite||' '||api_info.unite||' '||description as PRES\n"
+                + "from api_medecin\n"
+                + "join api_prescription\n"
+                + "on api_medecin.idmed=api_prescription.idmed\n"
+                + "join api_info\n"
+                + "on api_prescription.idpres=api_info.idpres\n"
+                + "join api_medicament\n"
+                + "on api_info.idmedoc=api_medicament.idmedoc\n"
+                + "where api_medicament.idmedoc=?";
+        dbConnect = DBConnection.getConnection();
+        try (PreparedStatement pstm = dbConnect.prepareStatement(req)) {
+            pstm.setInt(1, id);
+            try (ResultSet rs = pstm.executeQuery()) {
+                boolean trouve = false;
+                while (rs.next()) {
+                    trouve = true;
+                    plusieurs.add(rs.getInt("ID"));
+                }
+                if (trouve) {
+                    return plusieurs;
+                } else {
+                    throw new SQLException("id du médicament inconnu");
+                }
+            }
+        }
+
     }
 }

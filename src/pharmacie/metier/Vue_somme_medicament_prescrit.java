@@ -1,33 +1,36 @@
 package pharmacie.metier;
-/**
- * classe métier de gestion d'un medicament
- *
- * @author Arnaud Laffineur
- * @version 1.0
- *
- */
-public class Medicament {
+
+public class Vue_somme_medicament_prescrit {
+    
     /**
      * identifiant unique du medicament
      */
     private int id;
+    
     /**
      * nom du medicament
      */
     private String nom;
+    
     /**
-     * description du medicament
+     * nom du medicament
      */
     private String description;
-    /**
-     * stock et unite du medicament
-     */
-    private String stock;
     
+    /**
+     * quantite du medicament prescrit
+     */
+    private int quantite;
+    
+    /**
+     * unite du medicament prescrit
+     */
+    private String unite;
+
     /**
      * constructeur par défaut
      */
-    public Medicament() {
+    public Vue_somme_medicament_prescrit() {
     }
 
     /**
@@ -35,16 +38,17 @@ public class Medicament {
      *
      * @param id identifiant unique du medicament, affecté par la base de données
      * @param nom nom du medicament
-     * @param description description du medicament
-     * @param stock stock du medicament
+     * @param quantite quantite du medicament prescrit
+     * @param unite unite du medicament prescrit
      */
-    public Medicament(int id, String nom, String description, String stock) {
+    public Vue_somme_medicament_prescrit(int id, String nom, String description, int quantite, String unite) {
         this.id = id;
         this.nom = nom;
-        this.description = description;
-        this.stock = stock;
+        this.description=description;
+        this.quantite = quantite;
+        this.unite = unite;
     }
-    
+
     /**
      * getter id
      * @return identifiant du medicament
@@ -52,7 +56,7 @@ public class Medicament {
     public int getId() {
         return id;
     }
-    
+
     /**
      * setter id
      * @param id identifiant du medicament
@@ -60,7 +64,7 @@ public class Medicament {
     public void setId(int id) {
         this.id = id;
     }
-    
+
     /**
      * getter nom
      * @return nom du medicament
@@ -68,7 +72,7 @@ public class Medicament {
     public String getNom() {
         return nom;
     }
-    
+
     /**
      * setter nom
      * @param nom nom du medicament
@@ -76,7 +80,7 @@ public class Medicament {
     public void setNom(String nom) {
         this.nom = nom;
     }
-    
+
     /**
      * getter description
      * @return description du medicament
@@ -84,9 +88,9 @@ public class Medicament {
     public String getDescription() {
         return description;
     }
-    
+
     /**
-     * setter description 
+     * setter nom
      * @param description description du medicament
      */
     public void setDescription(String description) {
@@ -94,19 +98,35 @@ public class Medicament {
     }
     
     /**
-     * getter stock 
-     * @return stock du medicament
+     * getter quantite
+     * @return quantite du medicament prescrit
      */
-    public String getStock() {
-        return stock;
+    public int getQuantite() {
+        return quantite;
     }
-    
+
     /**
-     * setter stock 
-     * @param stock stock du medicament
+     * setter quantite
+     * @param quantite quantite du medicament prescrit
      */
-    public void setStock(String stock) {
-        this.stock = stock;
+    public void setQuantite(int quantite) {
+        this.quantite = quantite;
+    }
+
+    /**
+     * getter unite
+     * @return unite du medicament prescrit
+     */
+    public String getUnite() {
+        return unite;
+    }
+
+    /**
+     * setter unite
+     * @param unite unite du medicament prescrit
+     */
+    public void setUnite(String unite) {
+        this.unite = unite;
     }
 
     /**
@@ -115,8 +135,8 @@ public class Medicament {
     */
     @Override
     public String toString() {
-      //  return "Medicament{" + "id=" + id + ", nom=" + nom + ", description=" + description + ", stock=" + stock + '}';
-        return "Médicament n°"+id+":"+"\n"+nom+" "+description;
+        return "Médicament n°"+id+":"+"\nNom :" + nom + " "+description+"\nQuantite totale prescrite:" + quantite + " " + unite;
     }
+    
     
 }
