@@ -139,7 +139,7 @@ public class Medecin {
     */
     @Override
     public String toString() {
-        return "Médecin n°"+id+" :" +"\nNom :"+nom+"\nPrénom:"+prenom+"\nMatricule :"+matricule+"\nTéléphone :"+tel;
+        return "Médecin n°"+id+" :" +"\n"+nom+" "+prenom+"\nMatricule :"+matricule+"\nTéléphone :"+tel;
     }
 
 }

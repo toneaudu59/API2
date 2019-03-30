@@ -115,7 +115,7 @@ public class Patient {
     */
     @Override
     public String toString() {
-        return "Patient n°"+id+" :" +"\nNom :"+nom+"\nPrénom:"+prenom+"\nTéléphone :"+tel;
+        return "Patient n°"+id+" :" +"\n"+nom+" "+prenom+"\nTéléphone :"+tel;
     }
     
 }

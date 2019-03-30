@@ -28,7 +28,7 @@ public class PrescriptionDAO extends DAO<Prescription> {
     public Prescription create(Prescription obj) throws SQLException {
 
         String req1 = "insert into api_prescription(dateprescription,idmed,idpat) values(?,?,?)";
-        String req2 = "select idpres from api_prescription where dateprescription and idmed and idpat";
+        String req2 = "select idpres from api_prescription where dateprescription=? and idmed=? and idpat=?";
         dbConnect = DBConnection.getConnection();
         try (PreparedStatement pstm1 = dbConnect.prepareStatement(req1);
                 PreparedStatement pstm2 = dbConnect.prepareStatement(req2)) {

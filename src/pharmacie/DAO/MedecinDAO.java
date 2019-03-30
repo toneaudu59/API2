@@ -77,7 +77,7 @@ public class MedecinDAO extends DAO<Medecin> {
                     return new Medecin(id, matricule, nom, prenom, tel);
 
                 } else {
-                    throw new SQLException("Code inconnu");
+                    throw new SQLException("Id inconnu");
                 }
 
             }
@@ -113,6 +113,37 @@ public class MedecinDAO extends DAO<Medecin> {
             }
         }
     }
+    
+    /**
+     * récupération des données d'un medecin sur base de son matricule
+     *
+     * @throws SQLException code inconnu
+     * @param matricule Matricule du medecin
+     * @return medecin trouvé
+     */
+    public Medecin read(String matricule) throws SQLException {
+
+        String req = "select * from api_medecin where matricule=?";
+        dbConnect=DBConnection.getConnection();
+        try (PreparedStatement pstm = dbConnect.prepareStatement(req)) {
+
+            pstm.setString(1, matricule);
+            try (ResultSet rs = pstm.executeQuery()) {
+                if (rs.next()) {
+                    int id = rs.getInt("IDMED");
+                    String nom=rs.getString("NOM");
+                    String prenom=rs.getString("PRENOM");
+                    String tel=rs.getString("tel");
+                    return new Medecin(id, matricule, nom, prenom, tel);
+
+                } else {
+                    throw new SQLException("Matricule du médecin inconnu");
+                }
+
+            }
+        }
+    }
+    
     /**
      * mise à jour des données d'un medecin sur base de son identifiant
      *
@@ -133,7 +164,7 @@ public class MedecinDAO extends DAO<Medecin> {
             pstm.setString(4, obj.getTel());
             int n = pstm.executeUpdate();
             if (n == 0) {
-                throw new SQLException("aucune ligne médecin mise à jour");
+                throw new SQLException("Aucune ligne médecin mise à jour");
             }
             return read(obj.getId());
         }
@@ -155,7 +186,7 @@ public class MedecinDAO extends DAO<Medecin> {
             pstm.setInt(1, obj.getId());
             int n = pstm.executeUpdate();
             if (n == 0) {
-                throw new SQLException("aucune ligne médecin effacée");
+                throw new SQLException("Aucune ligne médecin effacée");
             }
 
         }
@@ -187,7 +218,7 @@ public class MedecinDAO extends DAO<Medecin> {
                 }
 
                 if (!trouve) {
-                    throw new SQLException("nom inconnu");
+                    throw new SQLException("Nom inconnu");
                 } else {
                     return plusieurs;
                 }

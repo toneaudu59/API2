@@ -35,7 +35,7 @@ public class MedicamentDAO extends DAO<Medicament> {
             pstm1.setString(3, obj.getStock());
             int n = pstm1.executeUpdate();
             if (n == 0) {
-                throw new SQLException("erreur de creation du médicament, aucune ligne créée" + "1");
+                throw new SQLException("erreur de creation du médicament, aucune ligne créée");
             }
             pstm2.setString(1, obj.getNom());
             try (ResultSet rs = pstm2.executeQuery()) {
@@ -44,7 +44,7 @@ public class MedicamentDAO extends DAO<Medicament> {
                     obj.setId(id);
                     return read(id);
                 } else {
-                    throw new SQLException("erreur de création du médicament, record introuvable" + "2");
+                    throw new SQLException("erreur de création du médicament, record introuvable");
                 }
             }
         }
@@ -73,7 +73,7 @@ public class MedicamentDAO extends DAO<Medicament> {
                     return new Medicament(id, nom, description, stock);
 
                 } else {
-                    throw new SQLException("Code inconnu");
+                    throw new SQLException("Id du médicament inconnu");
                 }
 
             }
@@ -103,7 +103,7 @@ public class MedicamentDAO extends DAO<Medicament> {
                     return new Medicament(id, nomm, description, stock);
 
                 } else {
-                    throw new SQLException("Code inconnu");
+                    throw new SQLException("Nom du médicament inconnu");
                 }
 
             }
@@ -129,7 +129,7 @@ public class MedicamentDAO extends DAO<Medicament> {
             pstm.setString(3, obj.getStock());
             int n = pstm.executeUpdate();
             if (n == 0) {
-                throw new SQLException("aucune ligne médicament mise à jour");
+                throw new SQLException("Aucune ligne médicament mise à jour");
             }
             return read(obj.getId());
         }
@@ -150,7 +150,7 @@ public class MedicamentDAO extends DAO<Medicament> {
             pstm.setInt(1, obj.getId());
             int n = pstm.executeUpdate();
             if (n == 0) {
-                throw new SQLException("aucune ligne médicament effacée");
+                throw new SQLException("Aucune ligne médicament effacée");
             }
 
         }
@@ -183,7 +183,7 @@ public class MedicamentDAO extends DAO<Medicament> {
                 }
 
                 if (!trouve) {
-                    throw new SQLException("description inconnu");
+                    throw new SQLException("Description inconnu");
                 } else {
                     return plusieurs;
                 }
