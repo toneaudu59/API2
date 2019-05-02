@@ -16,7 +16,7 @@ public class Medecin {
      */
     private int id;
     /**
-     * matricule du medecin
+     * matricule du medecin 
      */
     private String matricule;
     /**
