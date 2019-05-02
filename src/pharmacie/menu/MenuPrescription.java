@@ -110,7 +110,6 @@ public class MenuPrescription {
                             try{
                                 inf=ind.create(inf);
                                 flag=true;
-                                v.print("Créé");
                             }catch(Exception e){
                                 v.print(e);
                             } 
@@ -125,9 +124,7 @@ public class MenuPrescription {
                                 }catch(Exception e){
                                     v.print(e);
                                 }
-                                
-                            }
-                            
+                            } 
                         }
                     }
                 }

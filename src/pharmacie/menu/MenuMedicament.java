@@ -23,8 +23,8 @@ public class MenuMedicament {
     public void menuM() {
         int ch = 10;
         while (ch != 0) {
-            v.print("\t0.Retour\n\t1.Ajouter un médicament\n\t2.Modifier un médicament\n\t3.Supprimer un médicament\n\t4.Rechercher des médicaments");
-            ch = v.verifInt("[0-4]");
+            v.print("\t0.Retour\n\t1.Ajouter un médicament\n\t2.Modifier un médicament\n\t3.Supprimer un médicament\n\t4.Recherche sur la description\n\t5.Recherche sur le code");
+            ch = v.verifInt("[0-5]");
             switch (ch) {
                 case 0:
                     v.print("Retour");
@@ -41,23 +41,38 @@ public class MenuMedicament {
                 case 4:
                     RechM();
                     break;
+                case 5:
+                    RechC();
+                    break;
                 default:
-                    v.print("Erreur de saisie entrez un chiffre entre 0 et 4");
+                    v.print("Erreur de saisie entrez un chiffre entre 0 et 5");
             }
         }
     }
 
     public void RechM() {
-        v.print("Rechercher des médicaments :");
+        v.print("Recherche sur la description :");
         v.print("Description à rechercher :");
         String desc = sc.nextLine();
         try {
-            List<Vue_somme_medicament_prescrit> plusieurs = m.rech(desc);
-            for (Vue_somme_medicament_prescrit m : plusieurs) {
+            List<Medicament> plusieurs = m.rechmd(desc);
+            for (Medicament m : plusieurs) {
                 System.out.println(m);
             }
         } catch (Exception e) {
-            v.print("Recherche Impossible" + e);
+            v.print("Description inconnue");
+        }
+    }
+    
+    public void RechC() {
+        v.print("Recherche sur le code :");
+        v.print("Code à rechercher :");
+        String code = sc.nextLine();
+        try {
+            me = m.rechcode(code);
+                System.out.println(me);
+        } catch (Exception e) {
+            v.print("Code inconnu");
         }
     }
 
@@ -71,17 +86,18 @@ public class MenuMedicament {
                 InfoDAO in = new InfoDAO();
                 List<Info> pli = new ArrayList<>();
                 try {
-                    pli = in.rech("" + me.getId());
+                    pli = in.rech("" + me.getId());//récupère une liste d'info
+                    
                 } catch (Exception e) {
-                    v.print("Impossible de retrouver les infos :" + e);
+                    v.print("Pas d'info");
                 }
                 List<Integer> pres = new ArrayList<>();
                 PrescriptionDAO pda = new PrescriptionDAO();
                 List<Prescription> pr = new ArrayList<>();
-                v.print("Prescriptions :");
-                boolean flag = false;
+                boolean flag=true;
                 try {                   
-                    pres = pda.rechmed(me.getId());
+                    pres = pda.rechmed(me.getId());//Récupère une liste d'id de prescription
+                    v.print("Prescriptions :");
                     for (int i = 0; i < pres.size(); i++) {
                         v.print(pres.get(i).intValue());
                         pr.add(pda.read(pres.get(i).intValue()));
@@ -90,46 +106,43 @@ public class MenuMedicament {
                     for (Prescription p : pr) {
                         v.print(p);
                     }
-                    flag = true;
                 } catch (Exception e) {
-                    v.print("Prescription introuvable :"+e);
+                    v.print("Pas de prescription");
+                    flag=false;
                 }
-                v.print("Attention si vous supprimez ce médicament ça supprimera les prescriptions liées");
-                v.print("Continuer ?o/n");
-                String rep2 = sc.nextLine();
+                String rep2;
+                if(flag){
+                    v.print("Attention si vous supprimez ce médicament ça supprimera les prescriptions liées");
+                    v.print("Continuer ?o/n");
+                    rep2 = sc.nextLine();
+                }else rep2="o";
+                
                 if (rep2.equalsIgnoreCase("n")) {
                     v.print("Suppression annulée");
                 } else {
-                    if (flag) {
-                        flag = false;
+                    if (pli!=null) {
                         try {
                             for (Info inf : pli) {
                                 in.delete(inf);
                             }
-                            flag = true;
                         } catch (Exception e) {
                             v.print("Suppression des infos impossible :" + e);
                         }
-                        if (flag) { 
-                            flag = false;
+                        if (pr!=null) { 
                             try {
                                 for (Prescription p : pr) {
                                     pda.delete(p);
                                 }
-                                flag = true;
                             } catch (Exception e) {
                                 v.print("Impossible de supprimer les prescriptions :" + e);
                             }
                         }
-                        if (flag) {
                             try {
                                 m.delete(me);
                                 v.print("Médicament supprimé");
                             } catch (Exception e) {
                                 v.print("Suppression impossible");
                             }
-                        }
-
                     }
 
                 }
@@ -148,14 +161,14 @@ public class MenuMedicament {
         if (!nom.equalsIgnoreCase("0")) {
             v.print("Description :");
             String desc = sc.nextLine();
-            v.print("Stock :");
-            String stk = sc.nextLine();
-            me = new Medicament(0, nom, desc, stk);
+            v.print("Code :");
+            String code = sc.nextLine();
+            me = new Medicament(0, nom, desc, code);
             try {
                 me = m.create(me);
                 v.print(me);
             } catch (SQLException e) {
-                v.print("erreur :" + e + " ok");
+                v.print("erreur :" + e);
             }
         }
 
@@ -163,7 +176,7 @@ public class MenuMedicament {
 
     public void ModifM() {
         v.print("Modification d'un médicament :");
-        v.print("Nom (0 pour annuler):");//TODO 0 pour annuler
+        v.print("Nom (0 pour annuler):");
         String nom = sc.nextLine();
         if (!nom.equalsIgnoreCase("0")) {
             try {
@@ -183,13 +196,13 @@ public class MenuMedicament {
                     nvdesc = me.getDescription();
                 }
                 me.setDescription(nvdesc);
-                v.print("-Ancien stock :" + me.getStock());
-                v.print("Nouveau stock :");
-                String nvstk = sc.nextLine();
-                if (nvstk.length() == 0) {
-                    nvstk = me.getStock();
+                v.print("-Ancien code :" + me.getCode());
+                v.print("Nouveau code :");
+                String nvcode = sc.nextLine();
+                if (nvcode.length() == 0) {
+                    nvcode = me.getCode();
                 }
-                me.setStock(nvstk);
+                me.setCode(nvcode);
                 try {
                     m.update(me);
                     v.print("Médicament modifié");

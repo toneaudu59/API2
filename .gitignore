@@ -1,1 +1,4 @@
 /src/resources/
+/build/
+/dist/
+/nbproject/private/

@@ -25,14 +25,14 @@ public class MedicamentDAO extends DAO<Medicament> {
     @Override
     public Medicament create(Medicament obj) throws SQLException {
 
-        String req1 = "insert into api_medicament(nom,description,stock) values(?,?,?)";
+        String req1 = "insert into api_medicament(nom,description,code) values(?,?,?)";
         String req2 = "select idmedoc from api_medicament where nom=?";
         dbConnect = DBConnection.getConnection();
         try (PreparedStatement pstm1 = dbConnect.prepareStatement(req1);
                 PreparedStatement pstm2 = dbConnect.prepareStatement(req2)) {
             pstm1.setString(1, obj.getNom());
             pstm1.setString(2, obj.getDescription());
-            pstm1.setString(3, obj.getStock());
+            pstm1.setString(3, obj.getCode());
             int n = pstm1.executeUpdate();
             if (n == 0) {
                 throw new SQLException("erreur de creation du médicament, aucune ligne créée");
@@ -69,8 +69,8 @@ public class MedicamentDAO extends DAO<Medicament> {
 
                     String nom = rs.getString("NOM");
                     String description = rs.getString("DESCRIPTION");
-                    String stock = rs.getString("STOCK");
-                    return new Medicament(id, nom, description, stock);
+                    String code = rs.getString("CODE");
+                    return new Medicament(id, nom, description, code);
 
                 } else {
                     throw new SQLException("Id du médicament inconnu");
@@ -99,8 +99,8 @@ public class MedicamentDAO extends DAO<Medicament> {
                     int id = rs.getInt("IDMEDOC");
                     String nomm = rs.getString("NOM");
                     String description = rs.getString("DESCRIPTION");
-                    String stock = rs.getString("STOCK");
-                    return new Medicament(id, nomm, description, stock);
+                    String code = rs.getString("CODE");
+                    return new Medicament(id, nomm, description, code);
 
                 } else {
                     throw new SQLException("Nom du médicament inconnu");
@@ -119,14 +119,14 @@ public class MedicamentDAO extends DAO<Medicament> {
      */
     @Override
     public Medicament update(Medicament obj) throws SQLException {
-        String req = "update api_medicament set nom=?,description=?,stock=?where idmedoc= ?";
+        String req = "update api_medicament set nom=?,description=?,code=? where idmedoc= ?";
         dbConnect = DBConnection.getConnection();
         try (PreparedStatement pstm = dbConnect.prepareStatement(req)) {
 
             pstm.setInt(4, obj.getId());
             pstm.setString(1, obj.getNom());
             pstm.setString(2, obj.getDescription());
-            pstm.setString(3, obj.getStock());
+            pstm.setString(3, obj.getCode());
             int n = pstm.executeUpdate();
             if (n == 0) {
                 throw new SQLException("Aucune ligne médicament mise à jour");
@@ -157,8 +157,36 @@ public class MedicamentDAO extends DAO<Medicament> {
     }
 
     /**
+     * récupération des données d'un medicament sur base de son code unique
+     *
+     * @throws SQLException code inconnu
+     * @param code code du medicament
+     * @return medicament trouvé
+     */
+    public Medicament rechcode(String code) throws SQLException {
+        String req = "select * from api_medicament where code = ?";
+        dbConnect = DBConnection.getConnection();
+        try (PreparedStatement pstm = dbConnect.prepareStatement(req)) {
+
+            pstm.setString(1, code);
+            try (ResultSet rs = pstm.executeQuery()) {
+                if (rs.next()) {
+                    int id = rs.getInt("IDMEDOC");
+                    String nom = rs.getString("NOM");
+                    String description = rs.getString("DESCRIPTION");
+                    return new Medicament(id, nom, description, code);
+
+                } else {
+                    throw new SQLException("Id du médicament inconnu");
+                }
+
+            }
+        }
+    }
+    
+    /**
      * méthode permettant de récupérer tous les médicaments qui ont une
-     * description ressemblante
+     * description ressemblante et qui sont dans la vue
      *
      * @param desc description partielle recherchée
      * @return liste de medicaments
@@ -180,6 +208,32 @@ public class MedicamentDAO extends DAO<Medicament> {
                     int quantite = rs.getInt("QUANTITE");
                     String unite = rs.getString("UNITE");
                     plusieurs.add(new Vue_somme_medicament_prescrit(id, nom, description, quantite, unite));
+                }
+
+                if (!trouve) {
+                    throw new SQLException("Description inconnu");
+                } else {
+                    return plusieurs;
+                }
+            }
+        }
+    }
+    
+    public List<Medicament> rechmd(String desc) throws SQLException {
+        List<Medicament> plusieurs=new ArrayList<>();
+        String req = "select * from API_MEDICAMENT where description like ?";
+        dbConnect = DBConnection.getConnection();
+        try (PreparedStatement pstm = dbConnect.prepareStatement(req)) {
+            pstm.setString(1, "%" + desc + "%");
+            try (ResultSet rs = pstm.executeQuery()) {
+                boolean trouve = false;
+                while (rs.next()) {
+                    trouve = true;
+                    int idmedoc = rs.getInt("IDMEDOC");
+                    String nom = rs.getString("NOM");
+                    String description = rs.getString("DESCRIPTION");
+                    String code = rs.getString("CODE");
+                    plusieurs.add(new Medicament(idmedoc, nom, description, code));
                 }
 
                 if (!trouve) {

@@ -1,6 +1,9 @@
-package pharmacie.metier;
+package design_pattern.metier;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
+import pharmacie.metier.Prescription;
 
 /**
  * classe métier de gestion d'un medicament
@@ -27,6 +30,7 @@ public class Medicament {
      */
     private String code;
     
+    private Set<Prescription> prescription=new HashSet<>();
     /**
      * constructeur par défaut
      */
@@ -112,6 +116,9 @@ public class Medicament {
         this.code = code;
     }
     
+    public Set getPrescription(){
+        return prescription;
+    }
     /**
     * méthode toString
     * @return informations 
